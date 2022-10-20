@@ -15,6 +15,7 @@ import org.lwjgl.system.*;
 import java.nio.*;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -52,7 +53,7 @@ public enum Window {;
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        glfwWindow = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        glfwWindow = glfwCreateWindow(width, height, "Simulation", NULL, NULL);
         if ( glfwWindow == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -61,6 +62,19 @@ public enum Window {;
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
+
+        // Setup Callback when window size changes
+        glfwSetWindowSizeCallback(glfwWindow, (window, width, height) -> {
+            Window.width = width;
+            Window.height = height;
+        });
+        glfwSetFramebufferSizeCallback(glfwWindow, (window, width, height) -> glViewport(0, 0, width, height));
+
+        // Center the window on the primary monitor
+        GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        if(vidMode != null) {
+            glfwSetWindowPos(glfwWindow, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2);
+        }
 
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
