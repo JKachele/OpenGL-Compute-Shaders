@@ -3,11 +3,12 @@
  *File----------Window.java
  *Author--------Justin Kachele
  *Date----------10/18/2022
- *License-------GNU GENERAL PUBLIC LICENSE
+ *License-------MIT License
  ******************************************/
 package com.jkachele.simulation.engine;
 
 import com.jkachele.simulation.util.Color;
+import org.lwjgl.Version;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.*;
@@ -39,6 +40,9 @@ public enum Window {;
     }
 
     public static void start() {
+        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+
+
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
