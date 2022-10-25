@@ -52,7 +52,7 @@ public class Scene {
         computeShader = new Compute("assets/testCompute.comp.glsl", new Vector2i(10, 1));
         computeShader.use();
         float[] values1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        computeShader.init(values1);
+        computeShader.setValues(values1);
 
         // ============================================================
         // Generate VAO, VBO, and EBO buffer objects, and send to GPU
