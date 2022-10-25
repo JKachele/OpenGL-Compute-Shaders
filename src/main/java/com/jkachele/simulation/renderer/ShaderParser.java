@@ -19,15 +19,14 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 
-public class Shader {
+public class ShaderParser {
 
     private int shaderProgramID;
-    private boolean beingUsed = false;
     private String filePath;
     private String vertexSource;
     private String fragmentSource;
 
-    public Shader(String filePath) {
+    public ShaderParser(String filePath) {
         this.filePath = filePath;
         init();
     }
@@ -124,16 +123,11 @@ public class Shader {
     }
 
     public void use() {
-        // Bind shader Program if not already being used
-        if(!beingUsed) {
-            glUseProgram(shaderProgramID);
-            beingUsed = true;
-        }
+        glUseProgram(shaderProgramID);
     }
 
     public void detach() {
         glUseProgram(0);
-        beingUsed = false;
     }
 
 

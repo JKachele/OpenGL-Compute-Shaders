@@ -9,8 +9,6 @@ package com.jkachele.simulation.engine;
 
 import com.jkachele.simulation.util.Color;
 
-import java.sql.Time;
-
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -43,6 +41,8 @@ public class Engine implements Runnable{
     }
 
     private void gameLoop() {
+        Scene.init();
+
         float beginTime = (float)glfwGetTime();
         float endTime;
         float dt = -1.0f;
@@ -59,6 +59,10 @@ public class Engine implements Runnable{
             glfwPollEvents();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            if (dt >= 0) {
+                Scene.update(dt);
+            }
 
             glfwSwapBuffers(Window.glfwWindow); // swap the color buffers
 

@@ -114,5 +114,7 @@ public enum Window {;
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+
     }
 }
