@@ -72,6 +72,7 @@ public class Compute {
     public float[] getValues() {
         int totalWorkSize = workSize.x * workSize.y;
         float[] values = new float[totalWorkSize];
+        glActiveTexture( GL_TEXTURE0 );
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, values);
 
         return values;

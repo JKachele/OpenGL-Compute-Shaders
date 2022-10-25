@@ -52,6 +52,7 @@ public class Scene {
         computeShader = new Compute("assets/testCompute.comp.glsl", new Vector2i(10, 1));
         computeShader.use();
         float[] values1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        float[] values2 = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
         computeShader.setValues(values1);
 
         // ============================================================
