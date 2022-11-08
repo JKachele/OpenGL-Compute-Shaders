@@ -3,7 +3,7 @@
  *File----------Scene.java
  *Author--------Justin Kachele
  *Date----------10/20/2022
- *License-------MIT License
+ *License-------Mozilla Public License Version 2.0
  ******************************************/
 package com.jkachele.simulation.engine;
 
@@ -13,6 +13,7 @@ import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL20C.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.glGetIntegeri_v;
+import static org.lwjgl.opengl.GL43.*;
 import static org.lwjgl.stb.STBImage.*;
 
 public class Scene {
@@ -51,9 +54,13 @@ public class Scene {
 
         computeShader = new Compute("assets/testCompute.comp.glsl", new Vector2i(10, 1));
         computeShader.use();
-        float[] values1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        float[] values2 = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-        computeShader.setValues(values1);
+        float[] valuesA = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ByteBuffer vbb = ByteBuffer.allocate(valuesA.length * Float.BYTES);
+        vbb.order(ByteOrder.nativeOrder());
+        FloatBuffer values = vbb.asFloatBuffer();
+        values.put(valuesA);
+        values.position(0);
+        computeShader.setValues(valuesA);
 
         // ============================================================
         // Generate VAO, VBO, and EBO buffer objects, and send to GPU
@@ -96,6 +103,18 @@ public class Scene {
 
         String texturePath = "assets/testImage.png";
         texture(texturePath);
+
+//        getWorkGroupSizes();
+
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer channels = BufferUtils.createIntBuffer(1);
+        stbi_set_flip_vertically_on_load(true);
+        ByteBuffer image = stbi_load("assets/blendImageG.png", width, height, channels, 0);
+        if (image != null) {
+//            FloatBuffer imageFB = image.asFloatBuffer();
+            System.out.println(image);
+        }
     }
 
     public static void update(float dt) {
@@ -126,11 +145,11 @@ public class Scene {
         computeShader.use();
         computeShader.dispatch();
         computeShader.waitForCompute();
-        float[] outValues = computeShader.getValues();
+        FloatBuffer outValues = computeShader.getValuesBuffer();
 
         computeShader.dispose();
 
-        System.out.println(Arrays.toString(outValues));
+//        System.out.println(Arrays.toString(outValues.array()));
     }
 
     private static void texture(String filePath) {
@@ -175,5 +194,23 @@ public class Scene {
 
         // Clean up to prevent memory leaks
         stbi_image_free(image);
+    }
+
+    public static void getWorkGroupSizes() {
+        int[][] workGroupCount = new int[3][2];
+        int[][] workGroupSize = new int[3][2];
+        int[] workGroupInv = new int[2];
+
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, workGroupCount[0]);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, workGroupCount[1]);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, workGroupCount[2]);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, workGroupSize[0]);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, workGroupSize[1]);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, workGroupSize[2]);
+        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, workGroupInv);
+
+        System.out.println(Arrays.deepToString(workGroupCount));
+        System.out.println(Arrays.deepToString(workGroupSize));
+        System.out.println(Arrays.toString(workGroupInv));
     }
 }
